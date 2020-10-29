@@ -86,6 +86,8 @@ class App extends Component {
 
     const filteredData = this.getFilteredData();
 
+    const pageCount = Math.ceil(filteredData.length / pageSize);
+
     const displayData = _.chunk(filteredData, pageSize)[this.state.currentPage];
 
     return (
@@ -111,7 +113,7 @@ class App extends Component {
             nextLabel={'>'}
             breakLabel={'...'}
             breakClassName={'break-me'}
-            pageCount={20}
+            pageCount={pageCount}
             marginPagesDisplayed={2}
             pageRangeDisplayed={5}
             onPageChange={this.pageChangeHandler}
