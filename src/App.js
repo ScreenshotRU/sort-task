@@ -6,7 +6,8 @@ import _ from 'lodash';
 
 class App extends Component {
   state = {
-    isLoading: true,
+    isModeSelected: false,
+    isLoading: false,
     data: [],
     sort: 'asc', //desc
     sortField: 'id',
@@ -41,7 +42,16 @@ class App extends Component {
     this.setState({ row });
   };
 
-  render() {
+  render() 
+  if (!this.state.isModeSelected){
+    return(
+      <div className='container'>
+        <ModeSelector/>
+      </div>
+    )
+  }
+
+  {
     return (
       <div className='container'>
         {this.state.isLoading ? (
