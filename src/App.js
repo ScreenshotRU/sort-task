@@ -62,13 +62,17 @@ class App extends Component {
       );
     }
 
+    const displayData = _.chunk(this.state.data, pageSize)[
+      this.state.currentPage
+    ];
+
     return (
       <div className='container'>
         {this.state.isLoading ? (
           <Loader />
         ) : (
           <Table
-            data={this.state.data}
+            data={displayData}
             onSort={this.onSort}
             sort={this.state.sort}
             sortField={this.state.sortField}
