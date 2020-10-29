@@ -18,10 +18,19 @@ class App extends Component {
       data,
     });
   }
+
+  onSort = (sortField) => {
+    console.log(sortField);
+  };
+
   render() {
     return (
       <div className='container'>
-        {this.state.isLoading ? <Loader /> : <Table data={this.state.data} />}
+        {this.state.isLoading ? (
+          <Loader />
+        ) : (
+          <Table data={this.state.data} onSort={this.onSort} />
+        )}
       </div>
     );
   }
