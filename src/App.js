@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import ReactPaginate from 'react-paginate';
 import Loader from './Loader/Loader';
 import Table from './Table/Table';
 import DetailRowView from './DetailRowView/DetailRowView';
+import ModeSelector from './ModeSelector/ModeSelector';
 import _ from 'lodash';
 
 class App extends Component {
@@ -12,12 +14,11 @@ class App extends Component {
     sort: 'asc', //desc
     sortField: 'id',
     row: null,
+    currentPage: 0,
   };
 
-  async componentDidMount() {
-    const response = await fetch(
-      `http://www.filltext.com/?rows=32&id={number|1000}&firstName={firstName}&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&address={addressObject}&description={lorem|32}`
-    );
+  async fetchData(url) {
+    const response = await fetch(url);
     const data = await response.json();
 
     this.setState({
@@ -26,32 +27,41 @@ class App extends Component {
     });
   }
 
+  modeSelectHandler = (url) => {
+    this.setState({
+      isModeSelected: true,
+      isLoading: true,
+    });
+
+    this.fetchData(url);
+  };
+
   onSort = (sortField) => {
     const clonedData = this.state.data.concat();
-    const sortType = this.state.sort === 'asc' ? 'desc' : 'asc';
-    const orderedData = _.orderBy(clonedData, sortField, sortType);
-
-    this.setState({
-      data: orderedData,
-      sort: sortType,
-      sortField,
-    });
+    const sort = this.state.sort === 'asc' ? 'desc' : 'asc';
+    const data = _.orderBy(clonedData, sortField, sort);
+    this.setState({ data, sort, sortField });
   };
 
   onRowSelect = (row) => {
     this.setState({ row });
   };
 
-  render() 
-  if (!this.state.isModeSelected){
-    return(
-      <div className='container'>
-        <ModeSelector/>
-      </div>
-    )
-  }
+  pageChangeHandler = ({ selected }) => {
+    this.setState({ currentPage: selected });
+  };
 
-  {
+  render() {
+    const pageSize = 50;
+
+    if (!this.state.isModeSelected) {
+      return (
+        <div className='container'>
+          <ModeSelector onSelect={this.modeSelectHandler} />
+        </div>
+      );
+    }
+
     return (
       <div className='container'>
         {this.state.isLoading ? (
@@ -65,6 +75,27 @@ class App extends Component {
             onRowSelect={this.onRowSelect}
           />
         )}
+
+        {this.state.data.length > pageSize ? (
+          <ReactPaginate
+            previousLabel={'<'}
+            nextLabel={'>'}
+            breakLabel={'...'}
+            breakClassName={'break-me'}
+            pageCount={20}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={5}
+            onPageChange={this.pageChangeHandler}
+            containerClassName={'pagination'}
+            activeClassName={'active'}
+            pageClassName={'page-item'}
+            pageLinkClassName={'page-link'}
+            previousClassName={'page-item'}
+            nextClassName={'page-item'}
+            previousLinkClassName={'page-link'}
+            nextLinkClassName={'page-link'}
+          />
+        ) : null}
 
         {this.state.row ? <DetailRowView person={this.state.row} /> : null}
       </div>
